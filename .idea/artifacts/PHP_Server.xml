@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PHP_Server">
+    <output-path>/media/yuchuxi/YuZi/Minecraft/PowerNukkitX/plugins</output-path>
+    <root id="archive" name="PHP_Server.jar">
+      <element id="module-output" name="PHP_Server" />
+    </root>
+  </artifact>
+</component>
