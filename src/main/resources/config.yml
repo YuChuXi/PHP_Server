@@ -1,0 +1,15 @@
+bot:
+  enable: true
+  ws: "ws://127.0.0.1:47862" # GoCQ-http 的 WebSocket 的 URL
+  reconnectimes: 100 #重连间隔 Ticks
+  group:
+    main: 879578995 # 主群
+    repost: 991440485 # 转发群
+    admin: 805838239 # 管理群
+  user:
+    root: 3619545924 # 超级用户，只可执行"#$"服务主机命令、"#>"JShell命令
+    admin: [ 3619545924 ] # 管理员，可执行"#/"世界命令
+server:
+  name: 测试服
+  startimes: 0 # 服务器启动次数
+

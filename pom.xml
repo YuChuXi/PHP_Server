@@ -14,5 +14,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!--
+    <dependencies>
+        <dependency>
+            <groupId>cn.powernukkitx</groupId>
+            <artifactId>powernukkitx</artifactId>
+            <version>1.19.62-r1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.3</version>
+        </dependency>
 
+    </dependencies>
+    -->
 </project>

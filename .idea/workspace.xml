@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec24849-f2b6-42c7-8ae5-1fc210898405" name="变更" comment="build">
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/yuchuxi/php/PHP_Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/yuchuxi/php/PHP_Server.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/CallBack.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/EventsListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/PHPServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/RunCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/Bot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/Bot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/yuchuxi/php/PHP_Server.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/yuchuxi/php/PHP_Server.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,6 +79,9 @@
       </MavenImportingSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2MENlc52wkP1GFuEsOqluGQHSqB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -77,18 +90,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "/home/yuchuxi/IdeaProjects/PHP_Server",
-    "project.structure.last.edited": "工件",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "configurable.group.build"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/media/yuchuxi/YuZi/Minecraft/PowerNukkitX/libs&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;库&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Java&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration>$USER_HOME$/.subversion</configuration>
@@ -164,7 +177,35 @@
       <option name="project" value="LOCAL" />
       <updated>1677332849695</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="build">
+      <created>1677374596294</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1677374596294</updated>
+    </task>
+    <task id="LOCAL-00011" summary="build">
+      <created>1677375016438</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1677375016438</updated>
+    </task>
+    <task id="LOCAL-00012" summary="build">
+      <created>1677385455907</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1677385455907</updated>
+    </task>
+    <task id="LOCAL-00013" summary="build">
+      <created>1677921643673</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1677921643674</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -172,13 +213,27 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT_PROFILE" value="Project Default" />
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
@@ -189,5 +244,9 @@
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
