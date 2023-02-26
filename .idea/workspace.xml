@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bec24849-f2b6-42c7-8ae5-1fc210898405" name="变更" comment="build" />
+    <list default="true" id="bec24849-f2b6-42c7-8ae5-1fc210898405" name="变更" comment="build">
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/yuchuxi/php/PHP_Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/yuchuxi/php/PHP_Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -154,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677332422919</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="build">
+      <created>1677332849695</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1677332849695</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
