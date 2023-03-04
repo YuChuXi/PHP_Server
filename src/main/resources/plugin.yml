@@ -3,9 +3,9 @@ name: PHP_Server
 main: cn.yuchuxi.php.PHP_Server
 #remember version and api is string, don't write it like this: 1.0.0, or there will be an exception
 version: "1.0.0"
-api: [ "1.0.0" ]
+api: [ "1.0.14" ]
 load: POSTWORLD
-author: yuchuxi.cn, nukkit.ru
+author: yuchuxi.cn
 # Authors and author will be added together in one list.
 #authors: ["Example", "Another"]
 description: PHP服务器插件
