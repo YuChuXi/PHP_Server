@@ -1,0 +1,12 @@
+bot:
+  ws: "ws://127.0.0.1:47862" # GoCQhttp 的 WebSocket 的 URL
+  reconnectimes: 100 #重连间隔 Ticks
+  group:
+    main: 879578995 # 主群
+    repost: 991440485 # 转发群
+    admin: 805838239 # 管理群
+
+server:
+  name: 测试服
+  startimes: 0 # 服务器启动次数
+
