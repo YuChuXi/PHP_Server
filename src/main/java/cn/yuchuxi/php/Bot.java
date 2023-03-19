@@ -12,81 +12,34 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 
 public abstract class Bot<T extends Plugin> {
+    protected final T plugin; // 上级插件
+    protected final PluginLogger logger; // logger
+    protected final BotWebSocketClient botWSClient; // ws连接
+    protected final ServerScheduler scheduler; // 任务调度器
     private final Gson gson; // json解析器
-    private final T plugin; // 上级插件
-    private final PluginLogger logger; // logger
     private final URI botWSURI; // ws uri
-    private final WebSocketClient botWSClient; // ws连接
-    private final ReConnectTask<T> botReConnectTask; // 重连任务
-    private final ServerScheduler scheduler; // 任务调度器
-
-    private int reconnectTime; // 重连间隔 tick
+    protected int reconnectTime; // 重连间隔 tick
     //private int reconnectTimes; // 重联次数 x
+    private static final Pattern cqCodeMatcher=Pattern.compile("\\[CQ:(.+?),(.*?)]");
 
     public Bot(String sws, int reconnectTime, T plugin) throws URISyntaxException { // 初始化
         this.plugin = plugin;
         this.logger = plugin.getLogger();
         this.gson = new Gson();
         this.botWSURI = new URI(sws);
-        this.botReConnectTask = new ReConnectTask<>(plugin, this);
         this.scheduler = plugin.getServer().getScheduler();
         this.reconnectTime = reconnectTime;
+        this.botWSClient = new BotWebSocketClient(this.botWSURI, this);
+    }
 
-        this.botWSClient = new WebSocketClient(this.botWSURI) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                logger.info("The WebSocket server is successfully connected");
-            }
-
-            @Override
-            public void onMessage(String s) {
-                //logger.info(s);
-                JsonObject tree = JsonParser.parseString(s).getAsJsonObject();
-                try {
-                    String type = tree.get("post_type").getAsString();
-                    if ("message".equals(type)) {
-                        //logger.info(message.message_type + ":" + message.sender.nickname + ":" + message.message);
-                        String msgType = tree.get("message_type").getAsString();
-                        if ("private".equals(msgType)) {
-                            privateMessageL(tree.get("message").getAsString(),
-                                    tree.getAsJsonObject("sender").get("user_id").getAsLong(), tree);
-                        } else if ("group".equals(msgType)) {
-                            groupMessageL(tree.get("message").getAsString(),
-                                    tree.get("group_id").getAsLong(),
-                                    tree.getAsJsonObject("sender").get("user_id").getAsLong(), tree);
-                        }
-                    }
-                } catch (NullPointerException point) {
-
-                }
-
-            }
-
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                logger.warning("The WebSocket server is disconnected");
-                logger.warning("The WebSocket will reconnect 在" + reconnectTime + "Tick ");
-                //if (botRCTHandler!=null){
-                //    if(botRCTHandler.isCancelled()){
-                //        botRCTHandler.;
-                //    }
-                //}else {
-                //botRCTHandler =
-                scheduler.scheduleDelayedTask(botReConnectTask, reconnectTime);
-                //}
-            }
-
-            @Override
-            public void onError(Exception e) {
-                logger.error("WebSocket connection throws: " + e.getMessage());
-                e.printStackTrace();
-
-
-            }
-        };
+    public static String cqCodeToString(String msg) { // cq码转字符串
+        //("%[CQ:(.-),.-%]", "[%1]")("&amp;", "&")("&#91;", "[")("&#93;", "]")("&#44;", ",")
+        msg = cqCodeMatcher.matcher(msg).replaceAll("[$1]");
+        return msg.replace("&amp;", "&").replace("&#91;", "[").replace("&#93;", "]").replace("&#44;", ",");
     }
 
     public T getPlugin() {
@@ -101,26 +54,26 @@ public abstract class Bot<T extends Plugin> {
         this.reconnectTime = reconnectTime;
     }
 
-    public WebSocketClient getBotWSClient() {
-        return this.botWSClient;
-    }
-
     public URI getBotWSURI() {
         return botWSURI;
     }
 
-    public boolean connect() { // 连接
+    public void close(int code, String s) {
+        if (botWSClient.isOpen()) {
+            botWSClient.closeConnection(code, s);
+        }
+    }
+
+    public void connect() { // 连接
         if (!botWSClient.isOpen()) {
             this.botWSClient.connect();
         }
-        return true;
     }
 
-    public boolean reconnect() { // 连接
+    public void reconnect() { // 连接
         if (!botWSClient.isOpen()) {
             this.botWSClient.reconnect();
         }
-        return true;
     }
 
     public boolean sendMessage(String message, long user, String echo) { // 发消息
@@ -159,7 +112,7 @@ public abstract class Bot<T extends Plugin> {
     public abstract void privateMessageL(String message, long user, JsonObject msg);
 
 
-    public static class toGoCQ {
+    public static class toGoCQ { // cq包序列化类
         public String action;
         public Params params;
         public String echo;
@@ -173,20 +126,76 @@ public abstract class Bot<T extends Plugin> {
     }
 }
 
-class ReConnectTask<T extends Plugin> extends PluginTask {
-    private final Bot<T> bot;
+class BotWebSocketClient extends WebSocketClient {
+    private final Bot bot;
+    private final ReConnectTask botReConnectTask; // 重连任务
+
+    public BotWebSocketClient(URI serverUri, Bot bot) {
+        super(serverUri);
+        this.bot = bot;
+        this.botReConnectTask = new ReConnectTask<>(bot.getPlugin(), this);
+    }
+
+    @Override
+    public void onOpen(ServerHandshake serverHandshake) {
+        bot.logger.info("The WebSocket server is successfully connected");
+    }
+
+    @Override
+    public void onMessage(String s) {
+        //logger.info(s);
+        JsonObject tree = JsonParser.parseString(s).getAsJsonObject();
+        try {
+            String type = tree.get("post_type").getAsString();
+            if ("message".equals(type)) {
+                //logger.info(message.message_type + ":" + message.sender.nickname + ":" + message.message);
+                String msgType = tree.get("message_type").getAsString();
+                if ("private".equals(msgType)) {
+                    bot.privateMessageL(tree.get("message").getAsString(), tree.getAsJsonObject("sender").get(
+                            "user_id").getAsLong(), tree);
+                } else if ("group".equals(msgType)) {
+                    bot.groupMessageL(tree.get("message").getAsString(), tree.get("group_id").getAsLong(),
+                            tree.getAsJsonObject("sender").get("user_id").getAsLong(), tree);
+                }
+            }
+        } catch (NullPointerException point) {}
+
+    }
+
+    @Override
+    public void onClose(int i, String s, boolean b) {
+        if (i != 1880) {
+
+            bot.logger.warning(String.format("The WebSocket server is disconnected: %d, %s, %b", i, s, b));
+            bot.logger.warning(String.format("The WebSocket will reconnect in %d ticks", bot.reconnectTime));
+            bot.scheduler.scheduleDelayedTask(this.botReConnectTask, bot.reconnectTime);
+        }
+    }
+
+    @Override
+    public void onError(Exception e) {
+        bot.logger.error(String.format("WebSocket connection throws: %s", e.getMessage()));
+        e.printStackTrace();
+
+    }
+}
+
+class ReConnectTask<T extends Plugin> extends PluginTask { // 重连
+    private final WebSocketClient wsc;
     private final T plugin;
     private final PluginLogger logger;
 
-    public ReConnectTask(T plugin, Bot<T> bot) {
+    public ReConnectTask(T plugin, WebSocketClient wsc) {
         super(plugin);
         this.plugin = plugin;
         this.logger = plugin.getLogger();
-        this.bot = bot;
+        this.wsc = wsc;
     }
 
     @Override
     public void onRun(int i) {
-        bot.reconnect();
+        if (!wsc.isOpen()) {
+            wsc.reconnect();
+        }
     }
 }
