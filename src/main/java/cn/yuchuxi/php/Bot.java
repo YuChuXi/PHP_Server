@@ -1,50 +1,41 @@
 package cn.yuchuxi.php;
 
-import cn.nukkit.plugin.Plugin;
-import cn.nukkit.plugin.PluginLogger;
-import cn.nukkit.scheduler.PluginTask;
+import cn.nukkit.Server;
 import cn.nukkit.scheduler.ServerScheduler;
+import cn.nukkit.scheduler.Task;
+import cn.nukkit.utils.Logger;
+import cn.nukkit.utils.MainLogger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.logging.log4j.LogManager;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
 
-public abstract class Bot<T extends Plugin> {
-    protected final T plugin; // 上级插件
-    protected final PluginLogger logger; // logger
+public abstract class Bot {
+    protected final Logger logger; // logger
     protected final BotWebSocketClient botWSClient; // ws连接
     protected final ServerScheduler scheduler; // 任务调度器
     private final Gson gson; // json解析器
     private final URI botWSURI; // ws uri
     protected int reconnectTime; // 重连间隔 tick
     //private int reconnectTimes; // 重联次数 x
-    private static final Pattern cqCodeMatcher=Pattern.compile("\\[CQ:(.+?),(.*?)]");
 
-    public Bot(String sws, int reconnectTime, T plugin) throws URISyntaxException { // 初始化
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+    public Bot(String sws, int reconnectTime) throws URISyntaxException { // 初始化
+        this.logger = MainLogger.getLogger();
         this.gson = new Gson();
         this.botWSURI = new URI(sws);
-        this.scheduler = plugin.getServer().getScheduler();
+        this.scheduler = Server.getInstance().getScheduler();
         this.reconnectTime = reconnectTime;
         this.botWSClient = new BotWebSocketClient(this.botWSURI, this);
     }
 
-    public static String cqCodeToString(String msg) { // cq码转字符串
-        //("%[CQ:(.-),.-%]", "[%1]")("&amp;", "&")("&#91;", "[")("&#93;", "]")("&#44;", ",")
-        msg = cqCodeMatcher.matcher(msg).replaceAll("[$1]");
-        return msg.replace("&amp;", "&").replace("&#91;", "[").replace("&#93;", "]").replace("&#44;", ",");
-    }
-
-    public T getPlugin() {
-        return plugin;
-    }
 
     public int getReconnectTime() {
         return reconnectTime;
@@ -127,13 +118,21 @@ public abstract class Bot<T extends Plugin> {
 }
 
 class BotWebSocketClient extends WebSocketClient {
+    private static final Pattern cqCodeMatcher = Pattern.compile("\\[CQ:(.+?),(.*?)]");
     private final Bot bot;
     private final ReConnectTask botReConnectTask; // 重连任务
 
-    public BotWebSocketClient(URI serverUri, Bot bot) {
+    public BotWebSocketClient(URI serverUri, @NotNull Bot bot) {
         super(serverUri);
         this.bot = bot;
-        this.botReConnectTask = new ReConnectTask<>(bot.getPlugin(), this);
+        this.botReConnectTask = new ReConnectTask(this);
+    }
+
+    @NotNull
+    public static String cqCodeToString(String msg) { // cq码转字符串
+        //("%[CQ:(.-),.-%]", "[%1]")("&amp;", "&")("&#91;", "[")("&#93;", "]")("&#44;", ",")
+        return cqCodeMatcher.matcher(msg).replaceAll("[$1]").replace("&amp;", "&").replace("&#91;", "[").replace(
+                "&#93;", "]").replace("&#44;", ",");
     }
 
     @Override
@@ -151,21 +150,22 @@ class BotWebSocketClient extends WebSocketClient {
                 //logger.info(message.message_type + ":" + message.sender.nickname + ":" + message.message);
                 String msgType = tree.get("message_type").getAsString();
                 if ("private".equals(msgType)) {
-                    bot.privateMessageL(tree.get("message").getAsString(), tree.getAsJsonObject("sender").get(
-                            "user_id").getAsLong(), tree);
+                    bot.privateMessageL(cqCodeToString(tree.get("message").getAsString()), tree.getAsJsonObject(
+                            "sender").get("user_id").getAsLong(), tree);
                 } else if ("group".equals(msgType)) {
-                    bot.groupMessageL(tree.get("message").getAsString(), tree.get("group_id").getAsLong(),
+                    bot.groupMessageL(cqCodeToString(tree.get("message").getAsString()),
+                            tree.get("group_id").getAsLong(),
                             tree.getAsJsonObject("sender").get("user_id").getAsLong(), tree);
                 }
             }
-        } catch (NullPointerException point) {}
+        } catch (NullPointerException ignored) {
+        }
 
     }
 
     @Override
     public void onClose(int i, String s, boolean b) {
         if (i != 1880) {
-
             bot.logger.warning(String.format("The WebSocket server is disconnected: %d, %s, %b", i, s, b));
             bot.logger.warning(String.format("The WebSocket will reconnect in %d ticks", bot.reconnectTime));
             bot.scheduler.scheduleDelayedTask(this.botReConnectTask, bot.reconnectTime);
@@ -173,22 +173,19 @@ class BotWebSocketClient extends WebSocketClient {
     }
 
     @Override
-    public void onError(Exception e) {
+    public void onError(@NotNull Exception e) {
         bot.logger.error(String.format("WebSocket connection throws: %s", e.getMessage()));
         e.printStackTrace();
-
     }
 }
 
-class ReConnectTask<T extends Plugin> extends PluginTask { // 重连
+class ReConnectTask extends Task { // 重连
     private final WebSocketClient wsc;
-    private final T plugin;
-    private final PluginLogger logger;
+    //private final PluginLogger logger;
 
-    public ReConnectTask(T plugin, WebSocketClient wsc) {
-        super(plugin);
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+    public ReConnectTask(WebSocketClient wsc) {
+        super();
+        //this.logger = plugin.getLogger();
         this.wsc = wsc;
     }
 
